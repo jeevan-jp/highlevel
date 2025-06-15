@@ -1,5 +1,6 @@
 import Queue from "bee-queue";
 import { logger } from "../logger/logger";
+import { TJobStatus } from "../types/queue";
 import { getQueueConfig } from "./config";
 import { IBaseTask } from "./constants";
 
@@ -21,9 +22,13 @@ export class BaseQueue extends Queue {
     return this.createJob(payloadData).save();
   }
 
+  public async getSucceddedJobs<T>(type: TJobStatus) {
+    return this.getJobs(type, { start: 0, end: 100 });
+  }
+
   public async getTaskStatus<T>(taskId: string): Promise<{
     progress: any;
-    status: "created" | "succeeded" | "failed" | "retrying";
+    status: TJobStatus;
     data: IBaseTask<T>;
   }> {
     const job = await super.getJob(taskId);

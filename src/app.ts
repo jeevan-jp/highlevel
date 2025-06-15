@@ -51,7 +51,8 @@ const apiLimiter = rateLimit({
   message: "You exceeded 100 requests in 15 minutes limit!",
 });
 
-app.use("/api/v1", apiLimiter, tokenHandler, apiV1Routes);
+// app.use("/api/v1", apiLimiter, tokenHandler, apiV1Routes);
+app.use("/api/v1", apiLimiter, apiV1Routes);
 
 // global error handler
 app.use(async (err: Error, _req: any, res: any, next: NextFunction) => {
