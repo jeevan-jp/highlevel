@@ -1,8 +1,7 @@
 import "reflect-metadata";
-
 import dotenv from "dotenv";
 import express from "express";
-import { logger } from "./logger";
+import { logger } from "./logger/logger";
 
 dotenv.config({ path: ".env" });
 
