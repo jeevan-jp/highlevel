@@ -1,0 +1,4 @@
+# App's running environment
+NODE_ENV=
+
+PORT=
