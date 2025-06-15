@@ -21,15 +21,22 @@
   "license": "ISC",
   "description": "Service to manage bulk actions in CRM",
   "dependencies": {
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "reflect-metadata": "^0.2.2"
+    "morgan": "^1.10.0",
+    "reflect-metadata": "^0.2.2",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.1",
     "@types/express": "^5.0.3",
-    "dotenv": "^16.5.0",
+    "@types/morgan": "^1.9.10",
     "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
+    "tslint": "^5.20.1",
+    "tslint-clean-code": "^0.2.10",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^5.8.3"
   }
 }

@@ -1,13 +1,18 @@
-require("dotenv").config({ path: ".env" });
-import 'reflect-metadata';
+import "reflect-metadata";
 
-import express from 'express';
+import dotenv from "dotenv";
+import express from "express";
+import { logger } from "./logger";
+
+dotenv.config({ path: ".env" });
 
 const app = express();
 
-app.get('/', (req, res, next) => {
-	res.json({ time: Date.now() });
+app.get("/", (req, res, next) => {
+  res.json({ time: Date.now() });
 });
 
 const port = process.env.PORT;
-app.listen(process.env.PORT, () => { console.log(`listening on ${port}`) });
+app.listen(process.env.PORT, () => {
+	logger.info(`listening on ${port}`);
+});
