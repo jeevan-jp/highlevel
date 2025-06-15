@@ -14,3 +14,9 @@ DB_NAME=
 # Redis configuration
 REDIS_HOST=
 REDIS_PORT=
+
+# Allowed Origins
+ALLOWED_ORIGINS=
+
+# Auth Token
+HL_TOKEN=
