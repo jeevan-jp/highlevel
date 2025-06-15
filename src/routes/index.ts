@@ -3,10 +3,11 @@ import { logger } from "../logger/logger";
 
 const router = Router();
 
-router.post("/bulk/:entityId", (req, res) => {
-  const entityId = req.params.entityId;
+router.post("/bulk-actions", (req, res) => {
+  const entityId = req.body.entityId;
   logger.info(`Processing bulk update: ${entityId}`);
-  res.json({ message: "Success", entity: entityId });
+
+  res.json({ success: true, entity: entityId });
 });
 
 export default router;
