@@ -14,13 +14,15 @@
     "postbuild": "rimraf  dist/**/spec dist/**/*.spec.js",
     "watch": "tsc -w -p ./src -p ./tsconfig.json",
     "start": "node --env-file=.env ./dist/index.js",
-    "dev": "nodemon --env-file=.env ./src/index.ts"
+    "dev": "nodemon --env-file=.env ./src/index.ts",
+    "worker": "nodemon --env-file=.env ./src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "Service to manage bulk actions in CRM",
   "dependencies": {
+    "bee-queue": "^1.7.1",
     "bluebird": "^3.7.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
