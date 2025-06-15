@@ -1,6 +1,6 @@
-import "reflect-metadata";
 import dotenv from "dotenv";
 import express from "express";
+import "reflect-metadata";
 import { logger } from "./logger/logger";
 
 dotenv.config({ path: ".env" });
@@ -13,5 +13,5 @@ app.get("/", (req, res, next) => {
 
 const port = process.env.PORT;
 app.listen(process.env.PORT, () => {
-	logger.info(`listening on ${port}`);
+  logger.info(`listening on ${port}`);
 });

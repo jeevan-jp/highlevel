@@ -68,7 +68,8 @@
         "multiline": "never"
       }
     ],
-    "no-bitwise": false
+    "no-bitwise": false,
+    "object-literal-sort-keys": false
   },
   "extends": ["tslint:latest", "tslint-config-prettier"]
 }

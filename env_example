@@ -1,4 +1,16 @@
 # App's running environment
 NODE_ENV=
 
+# Server port
 PORT=
+
+# Database configuration
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+
+# Redis configuration
+REDIS_HOST=
+REDIS_PORT=

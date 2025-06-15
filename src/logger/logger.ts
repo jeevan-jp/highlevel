@@ -8,7 +8,7 @@ const logFormat = winston.format.combine(
   winston.format.colorize({ all: false }),
   winston.format.printf((info) => {
     return `${info.level}: ${info.message}`;
-  })
+  }),
 );
 
 winston.addColors({
@@ -20,8 +20,8 @@ winston.addColors({
 });
 
 let logger = winston.createLogger({
-  level: "info",
   format: logFormat,
+  level: "info",
   transports: [new winston.transports.Console()],
 });
 
@@ -34,11 +34,11 @@ function updateLoggerNamespace(requestId: any) {
       //  retrieve requestId from queue procesor  for each log entry
       const reqId = requestId || "-";
       return `[${reqId}] ${info.level}: ${info.message}`;
-    })
+    }),
   );
   logger = winston.createLogger({
-    level: "info",
     format: newLoggerFormat,
+    level: "info",
     transports: [new winston.transports.Console()],
   });
 }
@@ -46,10 +46,10 @@ function updateLoggerNamespace(requestId: any) {
 // set custom tokens for logging
 morgan.token("req-details", (req: Request) => {
   return JSON.stringify({
-    headers: req.headers,
     body: req.body, // commeting out to suppress the log size
-    query: req.query,
+    headers: req.headers,
     params: req.params,
+    query: req.query,
   });
 });
 
