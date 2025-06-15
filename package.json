@@ -15,7 +15,10 @@
     "watch": "tsc -w -p ./src -p ./tsconfig.json",
     "start": "node --env-file=.env ./dist/index.js",
     "dev": "nodemon --env-file=.env ./src/index.ts",
-    "worker": "nodemon --env-file=.env ./src/index.ts"
+    "worker": "nodemon --env-file=.env ./src/index.ts",
+    "typeorm": "npx ts-node src/typeorm/config/staticEnv.ts ; node --require ts-node/register ./node_modules/typeorm/cli.js -f src/typeorm/config/tempTypeOrmEnv.ts",
+    "posttypeorm": "rm src/typeorm/config/tempTypeOrmEnv.ts",
+    "generate:migration": "npm run typeorm migration:generate -- -n jp"
   },
   "keywords": [],
   "author": "",

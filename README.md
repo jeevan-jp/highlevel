@@ -17,3 +17,13 @@ pm2 start pm2.json
 ```
 pm2 start pm2.worker.json
 ```
+
+# create entity
+```
+npm run typeorm migration:generate -- -n jp
+```
+
+# Run Migration
+```
+npm run typeorm migration:run
+```
