@@ -3,6 +3,7 @@ import path from "path";
 import { logger } from "../../logger/logger";
 import getDefaultOrmConfig from "./ormConfig";
 
+// generate a temporary typeorm config for migrations
 async function getStaticEnv(): Promise<string> {
   const config = `const config = ${JSON.stringify(getDefaultOrmConfig())}; export default config;`;
   const filePath = path.join(__dirname, "tempTypeOrmEnv.ts");

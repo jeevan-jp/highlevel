@@ -1,6 +1,9 @@
 import { logger } from "../logger/logger";
 import { EQUEUE_NAMES, EQueueTask } from "../queue/constants";
 import { getQueueInstance } from "../queue/utils/getQueueInstance";
+import { IBulkActionPayload } from "../types/queue";
+
+const MAX_RETRIES_BEFORE_FAILURE = 3;
 
 class BulkActionServiceClass {
   public static get(): BulkActionServiceClass {
@@ -8,13 +11,13 @@ class BulkActionServiceClass {
   }
   private static readonly instance: BulkActionServiceClass;
 
-  public async createBulkActionInQueue(fileName: string, filePath: string) {
-    logger.info(`processing ${fileName}, at ${filePath}`);
-
+  public async createBulkActionInQueue(payload: IBulkActionPayload) {
     const job = await getQueueInstance(EQUEUE_NAMES.BULK_EDIT_QUEUE).addTask({
       taskName: EQueueTask.EDIT_CONTACT,
-      payload: { fileName, filePath },
+      payload,
     });
+
+    job.retries(MAX_RETRIES_BEFORE_FAILURE);
 
     logger.info(`bulk actions scheduled with action id: ${job.id}`);
 
