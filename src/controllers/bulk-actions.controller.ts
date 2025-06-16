@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { logger } from "../logger/logger";
-import UploadService from "../services/upload.service";
+import BulkActionService from "../services/bulk-actions.service";
 
 // class using Singleton Pattern
 class BulkActionControllerClass {
@@ -13,7 +13,7 @@ class BulkActionControllerClass {
   public async createBulkAction(req: any, res: any) {
     try {
       const { fileName, filePath } = req.body;
-      const job = await UploadService.createBulkActionInQueue(
+      const job = await BulkActionService.createBulkActionInQueue(
         fileName,
         filePath,
       );
@@ -34,7 +34,7 @@ class BulkActionControllerClass {
 
   public async getSucceddedActions(req: any, res: any) {
     try {
-      const actions = await UploadService.getQueueJobs();
+      const actions = await BulkActionService.getQueueJobs();
       res.json({ success: true, actions });
     } catch (err) {
       logger.error(err);
@@ -47,7 +47,7 @@ class BulkActionControllerClass {
 
   public async getAction(req: any, res: any) {
     try {
-      const bulkActionStatus = await UploadService.getJobStatus(
+      const bulkActionStatus = await BulkActionService.getJobStatus(
         req.params.actionId,
       );
       res.json({ success: true, data: bulkActionStatus });
