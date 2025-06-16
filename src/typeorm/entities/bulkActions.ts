@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { IBulkActionError } from "../../types/error";
 import { EBulkActionStatus } from "../../utils/enums";
 
 /**
@@ -97,13 +96,6 @@ export class BulkActions {
     nullable: false,
   })
   s3UploadId: string; // multipart uploadId
-
-  @Column({
-    name: "errors",
-    type: "json",
-    nullable: true,
-  })
-  errors?: IBulkActionError[]; // sample err obj: { chunkId: 1, rowNumber: 19990, msg: "duplicate phone number" };
 
   @Column({
     name: "total_chunks",
