@@ -1,6 +1,8 @@
 import { StatusCodes } from "http-status-codes";
+import { getRepository } from "typeorm";
 import { logger } from "../logger/logger";
 import BulkActionService from "../services/bulk-actions.service";
+import { BulkActions } from "../typeorm/entities/bulkActions";
 
 // class using Singleton Pattern
 class BulkActionControllerClass {
@@ -10,37 +12,26 @@ class BulkActionControllerClass {
 
   private static readonly instance: BulkActionControllerClass;
 
-  public async createBulkAction(req: any, res: any) {
+  public async listBulkActions(req: any, res: any) {
     try {
-      const { fileName, filePath } = req.body;
-      const job = await BulkActionService.createBulkActionInQueue(
-        fileName,
-        filePath,
-      );
+      const { limit, page } = req.query;
+      logger.info(`l: ${limit}; page: ${page}`);
+      if (!limit || !page) {
+        throw new Error("missing/invalid fields");
+      }
 
-      res.json({
-        success: true,
-        id: job.id,
-        message: `Request accepted with id: ${job.id}. You will receive updates over email.`,
+      const skip = Number(page - 1) * Number(limit);
+      const data = await getRepository(BulkActions).find({
+        take: Number(limit),
+        skip,
       });
-    } catch (err) {
-      logger.error(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: "Failed to create bulk action, please retry!",
-      });
-    }
-  }
 
-  public async getSucceddedActions(req: any, res: any) {
-    try {
-      const actions = await BulkActionService.getQueueJobs();
-      res.json({ success: true, actions });
-    } catch (err) {
+      res.json({ success: true, data });
+    } catch (err: any) {
       logger.error(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "Failed to fetch details, please retry!",
+        message: err.message,
       });
     }
   }

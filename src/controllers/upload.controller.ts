@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { logger } from "../logger/logger";
 import UploadService from "../services/upload.service";
+import { EEntity } from "../utils/enums";
 
 class UploadControllerClass {
   public static get(): UploadControllerClass {
@@ -69,6 +70,7 @@ class UploadControllerClass {
         key,
         uploadId,
         parts,
+        EEntity.CONTACT,
       );
 
       res.json({
