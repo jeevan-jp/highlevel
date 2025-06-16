@@ -58,19 +58,20 @@ class UploadControllerClass {
 
   public async completeMultipartUpload(req: any, res: any) {
     try {
-      const { key, uploadId, parts } = req.body;
-      logger.info(
-        `key: ${key}, id: ${uploadId}, parts: ${JSON.stringify(parts)}`,
-      );
+      const { entity, key, uploadId, parts } = req.body;
       if (!key || !uploadId || !parts || !Array.isArray(parts)) {
         throw new Error("key, uploadId, and a valid parts array are required");
+      }
+
+      if (!Object.keys(EEntity).includes(entity)) {
+        throw new Error("invalid entity!");
       }
 
       const data = await UploadService.completeMultipartUpload(
         key,
         uploadId,
         parts,
-        EEntity.CONTACT,
+        entity,
       );
 
       res.json({

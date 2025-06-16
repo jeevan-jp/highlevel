@@ -118,4 +118,28 @@ export class BulkActions {
     nullable: true,
   })
   lastChunkId: number;
+
+  @Column({
+    name: "success", // count of successful entries
+    type: "int",
+    nullable: false,
+    default: 0,
+  })
+  successCount: number;
+
+  @Column({
+    name: "failed", // failure count
+    type: "int",
+    nullable: false,
+    default: 0,
+  })
+  failedCount: number;
+
+  @Column({
+    name: "skipped", // number of skipped entries
+    type: "int",
+    nullable: false,
+    default: 0,
+  })
+  skippedCount: number;
 }

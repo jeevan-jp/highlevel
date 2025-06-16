@@ -1,5 +1,5 @@
 export enum EEntity {
-  CONTACT = "contact",
+  CONTACTS = "contacts",
 }
 
 export enum EBulkActionStatus {
