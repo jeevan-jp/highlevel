@@ -6,6 +6,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getRepository } from "typeorm";
+import { v4 as uuidV4 } from "uuid";
 import { logger } from "../logger/logger";
 import { BulkActions } from "../typeorm/entities/bulkActions";
 import { BUCKET_NAME, s3Client } from "../utils/awsS3";
@@ -78,6 +79,14 @@ class UploadServiceClass {
     }
   }
 
+  /**
+   * check existing entry in bulk_actions table to keep requests idempotent
+   * @param key s3 file key
+   * @param uploadId s3 upload id
+   * @param parts chunk for FE
+   * @param entity entity name
+   * @returns void
+   */
   public async completeMultipartUpload(
     key: string,
     uploadId: string,
@@ -85,19 +94,38 @@ class UploadServiceClass {
     entity: EEntity,
   ) {
     try {
-      const sortedParts = parts.sort((a, b) => a.PartNumber - b.PartNumber);
+      let s3Location: string;
 
-      const command = new CompleteMultipartUploadCommand({
-        Bucket: BUCKET_NAME,
-        Key: key,
-        UploadId: uploadId,
-        MultipartUpload: {
-          Parts: sortedParts,
-        },
+      let bulkAction: BulkActions;
+      const existingBulkAction = await getRepository(BulkActions).findOne({
+        s3Key: key,
       });
+      if (existingBulkAction) {
+        bulkAction = existingBulkAction;
+        s3Location = existingBulkAction.s3Location;
+      } else {
+        const sortedParts = parts.sort((a, b) => a.PartNumber - b.PartNumber);
 
-      const response = await s3Client.send(command);
-      const s3Location = response.Location ?? "";
+        const command = new CompleteMultipartUploadCommand({
+          Bucket: BUCKET_NAME,
+          Key: key,
+          UploadId: uploadId,
+          MultipartUpload: {
+            Parts: sortedParts,
+          },
+        });
+
+        const response = await s3Client.send(command);
+        s3Location = response.Location ?? "";
+
+        // use response location to create new bulk_action entry in db
+        bulkAction = new BulkActions();
+        bulkAction.id = uuidV4();
+        bulkAction.entity = entity;
+        bulkAction.s3Key = key;
+        bulkAction.s3Location = s3Location;
+        bulkAction.s3UploadId = uploadId;
+      }
 
       /**
        * :::: IMPORTANT: STEPS POST UPLOAD ::::
@@ -105,28 +133,19 @@ class UploadServiceClass {
        * 1. add task to bulk action queue, note queue's jobId
        * 2. save a new entry in bulk_action table to track task details in future
        */
-
-      // use response location to create new bulk_action entry in db
-      const bulkNewAction = new BulkActions();
-      bulkNewAction.entity = entity;
-      bulkNewAction.s3Key = key;
-      bulkNewAction.s3Location = s3Location;
-      bulkNewAction.s3UploadId = uploadId;
-      bulkNewAction.totalChunks = parts.length;
-
       const queuePayload = {
-        bulkActionId: bulkNewAction.id,
+        bulkActionId: bulkAction.id,
         s3Location,
         s3Key: key,
       };
       const job = await BulkActionService.createBulkActionInQueue(queuePayload);
-      bulkNewAction.queueJobId = Number(job.id);
+      bulkAction.queueJobId = Number(job.id);
 
-      await getRepository(BulkActions).save(bulkNewAction);
+      await getRepository(BulkActions).save(bulkAction);
 
       return {
-        bulkActionId: bulkNewAction.id,
-        location: response.Location, // The full URL of the final uploaded file
+        bulkActionId: bulkAction.id,
+        location: bulkAction.s3Location, // The full URL of the final uploaded file
         message:
           "Upload completed successfully! Request is being processed, we will update you once it is finished!",
       };

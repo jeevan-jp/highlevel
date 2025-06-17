@@ -1,4 +1,8 @@
 import { S3Client } from "@aws-sdk/client-s3";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.join(__dirname, "../..", ".env") });
 
 export const BUCKET_NAME = process.env.BUCKET_NAME;
 

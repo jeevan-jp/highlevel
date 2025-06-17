@@ -23,6 +23,5 @@ export const getTransactionQueryRunner = async () => {
   const connection = getConnection();
   const queryRunner = connection.createQueryRunner();
   await queryRunner.connect();
-  await queryRunner.startTransaction();
   return queryRunner;
 };
