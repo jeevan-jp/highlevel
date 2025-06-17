@@ -1,6 +1,8 @@
+import { getRepository } from "typeorm";
 import { logger } from "../logger/logger";
 import { EQUEUE_NAMES, EQueueTask } from "../queue/constants";
 import { getQueueInstance } from "../queue/utils/getQueueInstance";
+import { BulkActions } from "../typeorm/entities/bulkActions";
 import { IBulkActionPayload } from "../types/queue";
 
 const MAX_RETRIES_BEFORE_FAILURE = 3;
@@ -35,11 +37,9 @@ class BulkActionServiceClass {
     }));
   }
 
-  public async getJobStatus(taskId: string) {
-    const statusData = await getQueueInstance(
-      EQUEUE_NAMES.BULK_EDIT_QUEUE,
-    ).getTaskStatus(taskId);
-    return statusData;
+  public async getJobStatus(actionId: string) {
+    const data = await getRepository(BulkActions).findOne(actionId);
+    return data;
   }
 }
 

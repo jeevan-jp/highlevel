@@ -38,13 +38,14 @@ class BulkActionControllerClass {
 
   public async getAction(req: any, res: any) {
     try {
-      const bulkActionStatus = await BulkActionService.getJobStatus(
-        req.params.actionId,
-      );
-      res.json({ success: true, data: bulkActionStatus });
+      const data = await BulkActionService.getJobStatus(req.params.actionId);
+      if (!data) {
+        throw new Error(`Invalid action id`);
+      }
+      res.json({ success: true, data });
     } catch (err) {
       logger.error(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: "Failed to fetch job status. Kindly retry!",
       });
