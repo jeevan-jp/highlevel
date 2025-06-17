@@ -19,6 +19,7 @@ pm2 start pm2.worker.json
 ```
 
 # create entity
+you can add you own initials by replacing jp
 ```
 npm run typeorm migration:generate -- -n jp
 ```
