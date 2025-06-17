@@ -63,7 +63,7 @@ class UploadControllerClass {
         throw new Error("key, uploadId, and a valid parts array are required");
       }
 
-      if (!Object.keys(EEntity).includes(entity)) {
+      if (!Object.values(EEntity).includes(entity)) {
         throw new Error("invalid entity!");
       }
 

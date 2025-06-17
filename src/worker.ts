@@ -53,7 +53,7 @@ async function run() {
   process.on("uncaughtException", commonErrorHandler);
 
   process.on("exit", async () => {
-    logger.warn("Exit Singal Detected!");
+    logger.warn("Exit Signal Detected!");
 
     if (conn) {
       logger.warn("Closing DB Connnection!!");

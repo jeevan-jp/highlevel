@@ -58,11 +58,13 @@ export class BaseQueue extends Queue {
     });
 
     this.on("failed", (job, err: Error) => {
-      logger.info(`Job failed \n ${JSON.stringify(job, null, 2)} \n ${err}`);
+      logger.info(
+        `Job failed \n ${JSON.stringify(job.options, null, 2)} \n ${err}`,
+      );
     });
 
     this.on("job succeeded", (jobId: string) => {
-      logger.info(`${jobId} completed!!`);
+      logger.info(`Job id: ${jobId} completed!!`);
     });
 
     this.on("job failed", (jobId: string, err: Error) => {
