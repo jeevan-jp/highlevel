@@ -41,6 +41,13 @@ class BulkActionServiceClass {
     const data = await getRepository(BulkActions).findOne(actionId);
     return data;
   }
+
+  public async getActionStats(actionId: string) {
+    const data = await getRepository(BulkActions).findOne(actionId, {
+      select: ["stats"],
+    });
+    return data;
+  }
 }
 
 const BulkActionService = BulkActionServiceClass.get();

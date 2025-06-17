@@ -43,11 +43,11 @@ class BulkActionControllerClass {
         throw new Error(`Invalid action id`);
       }
       res.json({ success: true, data });
-    } catch (err) {
+    } catch (err: any) {
       logger.error(err);
       res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "Failed to fetch job status. Kindly retry!",
+        message: err.message ?? "Failed to fetch job status. Kindly retry!",
       });
     }
   }
@@ -55,15 +55,20 @@ class BulkActionControllerClass {
   public async getActionStats(req: any, res: any) {
     try {
       // job stats: success, failure, skipped etc.
+      const data = await BulkActionService.getActionStats(req.params.actionId);
+      if (!data) {
+        throw new Error(`Invalid action id`);
+      }
+
       res.json({
         success: true,
-        data: { succedded: 0, failed: 0, skipped: 0 },
+        data: data.stats,
       });
-    } catch (err) {
+    } catch (err: any) {
       logger.error(err);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "Failed to fetch job status. Kindly retry!",
+        message: err.message ?? "Failed to fetch job status. Kindly retry!",
       });
     }
   }
