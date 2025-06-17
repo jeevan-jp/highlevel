@@ -13,13 +13,12 @@ import { IBulkActionStats } from "../../types/actions";
 
 /**
  * Table should be designed to accomodate the following actions:
- * 1. progress percentage - formula: (last chunk id / total chunks) * 100
- * 2. action status
- * 3. actions stats - json
- * 4. actions errors - json(Array)
- * 5. jobId - redis(queue) job id
- * 6. timestamps
- * 7. s3 file info
+ * 1. action status
+ * 2. actions stats - json
+ * 3. actions errors - json(Array)
+ * 4. jobId - redis(queue) job id
+ * 5. timestamps
+ * 6. s3 file info
  */
 
 @Entity("bulk_actions")
@@ -60,20 +59,12 @@ export class BulkActions {
   completedAt?: Date;
 
   @Column({
-    name: "progress",
-    type: "tinyint",
-    nullable: false,
-    default: 0,
-  })
-  progress: number; // range: 0 - 100%
-
-  @Column({
     name: "job_id",
     type: "int",
     nullable: false,
     default: 0,
   })
-  queueJobId: number; // range: 0 - 100%
+  queueJobId: number; // queue job id
 
   @Column({
     name: "last_chunk_id",
