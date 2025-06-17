@@ -12,7 +12,7 @@ import { s3Client } from "../../utils/awsS3";
 import { EBulkActionStatus } from "../../utils/enums";
 import { IBaseTask } from "../constants";
 
-const BATCH_SIZE = 100; // no. of rows processed per batch
+export const BATCH_SIZE = 100; // can be stored in env or a criteria batch size criteria could be set
 
 /**
  * Key features:
@@ -82,7 +82,7 @@ export async function handleBulkContactEdit(
         if (batch.length === BATCH_SIZE) {
           parser.pause();
           // skip already processed one
-          if (currentBatch <= lastChunkProcessed) {
+          if (currentBatch < lastChunkProcessed) {
             logger.warn(`Skipping chunk id: ${currentBatch}`);
             stats.skippedRows += batch.length;
           } else {

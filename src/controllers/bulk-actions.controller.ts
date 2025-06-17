@@ -72,6 +72,26 @@ class BulkActionControllerClass {
       });
     }
   }
+
+  public async getActionProgress(req: any, res: any) {
+    try {
+      // job stats: success, failure, skipped etc.
+      const rowsProcessed =
+        (await BulkActionService.getActionProgress(req.params.actionId)) ?? 0;
+
+      res.json({
+        success: true,
+        message: `${rowsProcessed} entries processed`,
+        rowsProcessed,
+      });
+    } catch (err: any) {
+      logger.error(err);
+      res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: err.message ?? "Failed to fetch job status. Kindly retry!",
+      });
+    }
+  }
 }
 
 const BulkActionController = BulkActionControllerClass.get();
