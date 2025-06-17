@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -23,16 +24,17 @@ export class Contacts {
   deletedAt: Date;
 
   @Column({
-    name: "first_name",
-    length: 250,
+    name: "name",
+    length: 30,
     type: "varchar",
     nullable: false,
   })
-  firstName: string;
+  name: string;
 
+  @Index({ unique: true })
   @Column({
     name: "email",
-    length: 250,
+    length: 50,
     type: "varchar",
     nullable: true,
   })
@@ -40,7 +42,7 @@ export class Contacts {
 
   @Column({
     name: "phone",
-    length: 50,
+    length: 15,
     type: "varchar",
     nullable: true,
   })

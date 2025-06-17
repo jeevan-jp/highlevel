@@ -4,10 +4,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { EBulkActionStatus } from "../../utils/enums";
+import { IBulkActionStats } from "../../types/actions";
 
 /**
  * Table should be designed to accomodate the following actions:
@@ -74,6 +76,15 @@ export class BulkActions {
   queueJobId: number; // range: 0 - 100%
 
   @Column({
+    name: "last_chunk_id",
+    type: "int",
+    nullable: false,
+    default: 0,
+  })
+  lastSuccessfulChunkIndex: number;
+
+  @Index({ unique: true })
+  @Column({
     name: "s3_key",
     length: 100,
     type: "varchar",
@@ -98,40 +109,16 @@ export class BulkActions {
   s3UploadId: string; // multipart uploadId
 
   @Column({
-    name: "total_chunks",
-    type: "int",
-    nullable: false,
-  })
-  totalChunks: number;
-
-  @Column({
-    name: "last_chunk", // last successful chunk index
-    type: "int",
+    name: "stats",
+    type: "json",
     nullable: true,
   })
-  lastChunkId: number;
+  stats: IBulkActionStats; // multipart uploadId
 
   @Column({
-    name: "success", // count of successful entries
-    type: "int",
-    nullable: false,
-    default: 0,
+    name: "errors",
+    type: "json",
+    nullable: true,
   })
-  successCount: number;
-
-  @Column({
-    name: "failed", // failure count
-    type: "int",
-    nullable: false,
-    default: 0,
-  })
-  failedCount: number;
-
-  @Column({
-    name: "skipped", // number of skipped entries
-    type: "int",
-    nullable: false,
-    default: 0,
-  })
-  skippedCount: number;
+  errors: any[]; // multipart uploadId
 }
