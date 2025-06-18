@@ -78,6 +78,7 @@ class UploadControllerClass {
         success: true,
         message: data.message,
         location: data.location,
+        actionId: data.bulkActionId,
       });
     } catch (err: any) {
       logger.error(err);
