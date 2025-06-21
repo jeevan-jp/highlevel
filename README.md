@@ -104,7 +104,7 @@ BatchSize,Time
 
 #### Without Batching
 ```
-BatchSize,Time(seconds)
+ChunkSize,Time(seconds)
 1000,25.9s
 ```
 
@@ -122,6 +122,6 @@ BatchSize,Time(seconds)
 
 #### Without Batching
 ```
-BatchSize,Time
+ChunkSize,Time
 1000, 23s
 ```
