@@ -1,7 +1,6 @@
 import { getRepository } from "typeorm";
 import { logger } from "../logger/logger";
 import { EQUEUE_NAMES, EQueueTask } from "../queue/constants";
-import { BATCH_SIZE } from "../queue/task-handlers";
 import { getQueueInstance } from "../queue/utils/getQueueInstance";
 import { BulkActions } from "../typeorm/entities/bulkActions";
 import { IBulkActionPayload } from "../types/queue";
@@ -59,7 +58,8 @@ class BulkActionServiceClass {
       throw new Error("Invalid action Id");
     }
 
-    const rowProcessed = Number(data.lastSuccessfulChunkIndex) * BATCH_SIZE;
+    const rowProcessed =
+      Number(data.lastSuccessfulChunkIndex) * Number(process.env.BATCH_SIZE);
     return rowProcessed;
   }
 }

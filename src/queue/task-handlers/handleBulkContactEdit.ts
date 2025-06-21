@@ -12,8 +12,6 @@ import { s3Client } from "../../utils/awsS3";
 import { EBulkActionStatus } from "../../utils/enums";
 import { IBaseTask } from "../constants";
 
-export const BATCH_SIZE = 100; // can be stored in env or a criteria batch size criteria could be set
-
 /**
  * Key features:
  * 1. Streams csv file from s3
@@ -44,7 +42,9 @@ export async function handleBulkContactEdit(
     logger.warn(`:::: PROCESSING JOB ID: ${job.id} ::::`);
     let lastChunkProcessed = 0;
 
-    const existingAction = await bulkActionRepo.findOne(bulkActionId);
+    const existingAction = await bulkActionRepo.findOne(bulkActionId, {
+      select: ["lastSuccessfulChunkIndex"],
+    });
     if (existingAction) {
       lastChunkProcessed = Number(existingAction.lastSuccessfulChunkIndex);
     }
@@ -79,19 +79,19 @@ export async function handleBulkContactEdit(
         batch.push(row);
 
         // in case batch is full
-        if (batch.length === BATCH_SIZE) {
+        if (batch.length === Number(process.env.BATCH_SIZE)) {
           parser.pause();
           // skip already processed one
-          if (currentBatch < lastChunkProcessed) {
+          if (currentBatch <= lastChunkProcessed) {
             logger.warn(`Skipping chunk id: ${currentBatch}`);
-            stats.skippedRows += batch.length;
+            stats.skippedRows = Number(stats.skippedRows) + batch.length;
           } else {
             // process new batch
             logger.info(`Picked chunk id: ${currentBatch}`);
             await processBatch(batch, stats, errors, queryRunner);
 
             // update lastSuccessfulChunkIndex
-            await bulkActionRepo.update(bulkActionId, {
+            bulkActionRepo.update(bulkActionId, {
               lastSuccessfulChunkIndex: currentBatch,
             });
           }
@@ -172,6 +172,7 @@ async function processBatch(
 
   try {
     await queryRunner.startTransaction();
+    const t1 = Date.now();
 
     for (const row of batch) {
       if (!row.email || !row.name || !row.phone) {
@@ -191,6 +192,11 @@ async function processBatch(
           email: row.email,
           phone: row.phone,
         });
+
+        // await makRawQuery(
+        //   `insert into contacts ('name', 'email', 'phone') values (?, ?, ?)`,
+        //   [row.name, row.email, row.phone],
+        // );
       } catch (upsertErr) {
         await contactsRepo.update(
           { email: row.email },
@@ -203,8 +209,9 @@ async function processBatch(
 
     // If all operations were successful, commit the transaction
     await queryRunner.commitTransaction();
+    logger.warn(`Batch processed in ${Date.now() - t1}ms ✅`);
     logger.info(
-      `::::TRANSACTION COMMITTED! localSuccess: ${localSuccess}; localFailure: ${localFails} ::::`,
+      `::::TRANSACTION COMMITTED! ✅: ${localSuccess}; ❎: ${localFails} ::::`,
     );
   } catch (err: any) {
     // If any operation fails, roll back the entire transaction

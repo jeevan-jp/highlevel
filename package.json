@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.1",
+    "@faker-js/faker": "^9.8.0",
     "@types/express": "^5.0.3",
     "@types/ioredis": "^4.28.10",
     "@types/morgan": "^1.9.10",

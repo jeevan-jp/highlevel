@@ -50,3 +50,78 @@ Can be implemented using the following methods:
 * For High volume CRON jobs:
   * open source libraries: node-cron, node-schedule, Bull etc.
   * cloud services like Amazon EventBridge Scheduler, GCP/Firebase schedule function
+
+
+# Faker script:
+create a file faker.ts and run npx ts-node faker.ts;
+This will create a test data file named users.csc in project root
+```ts
+import { faker } from "@faker-js/faker";
+import fs from "fs";
+import { logger } from "./logger/logger";
+
+function createRandomUser() {
+  return {
+    username: faker.internet.username(),
+    email: faker.internet.email(),
+    phone: faker.phone.number({ style: "international" }),
+  };
+}
+
+const users = faker.helpers.multiple(createRandomUser, {
+  count: 10000000, // generate 1Cr users
+});
+
+let csvStr = "name,phone,email\n";
+let count = 0;
+
+for (const user of users) {
+  user.phone = user.phone.slice(-10); // use last 10 digits of phone number
+  csvStr += `${user.username},${user.phone},${user.email}\n`;
+  count++;
+
+  // write to a local file named "users.csv"
+  if (count % 50000 === 0) {
+    logger.info(count + " / 1000000");
+    fs.appendFileSync("users.csv", csvStr);
+    csvStr = ""; // reset csvStr after writing to file
+  }
+}
+
+fs.appendFileSync("users.csv", csvStr);
+```
+
+### DB Benchmarking: Write Performance (2cores/8gb/100gb)
+
+#### With Batching
+```
+BatchSize,Time
+10,0.22s
+100,2.22s
+500,11s
+1000,20.5s
+```
+
+#### Without Batching
+```
+BatchSize,Time(seconds)
+1000,25.9s
+```
+
+
+### DB Benchmarking: Write Performance (4cores/16gb/100gb)
+
+#### With Batching
+```
+BatchSize,Time(seconds)
+10, 0.2s
+100, 2.2s
+500, 9.5s
+1000, 20.5s
+```
+
+#### Without Batching
+```
+BatchSize,Time
+1000, 23s
+```
